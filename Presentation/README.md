@@ -1,4 +1,4 @@
----
+﻿---
 marp: true
 theme: default
 _class: lead
@@ -18,13 +18,13 @@ style: |
     justify-content: space-between;
     align-items: center;
     position: absolute;
-    top: 40px;   
+    top: 40px;
     left: 60px;
     right: 60px;
   }
-  .logo-header img { height: 140px; margin: 0; margin-left:10px; margin-right:10px }
+  .logo-header img { height: 140px; margin: 0 10px; }
   h1 { color: #088dc7; font-size: 2.8em; margin-top: 100px; text-align: left; }
-  h2 { color: #088dc7; font-size: 2em; border-bottom: 2px solid #088dc7; margin-bottom: 40px;}
+  h2 { color: #088dc7; font-size: 2em; border-bottom: 2px solid #088dc7; margin-bottom: 40px; }
   h3 { text-align: left; color: #444; margin-top: 0; }
 
   .sommaire-grid {
@@ -42,17 +42,25 @@ style: |
     border-left: 5px solid #088dc7;
   }
   .sommaire-num {
-    background: #088dc7; color: white; width: 35px; height: 35px;
-    display: flex; justify-content: center; align-items: center;
-    border-radius: 50%; font-weight: bold; margin-right: 15px; flex-shrink: 0;
+    background: #088dc7;
+    color: white;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    font-weight: bold;
+    margin-right: 15px;
+    flex-shrink: 0;
   }
-  
+
   section > p > img {
     display: block;
     margin: 0 auto;
     object-fit: contain;
     border-radius: 10px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   }
 
   .dt-card {
@@ -65,7 +73,7 @@ style: |
     width: 100%;
   }
 
-  /* --- FIX COULEURS TECH STACK --- */
+  /* Couleurs de la pile technique */
   .tech-container {
     display: flex;
     flex-wrap: wrap;
@@ -76,7 +84,7 @@ style: |
     padding: 8px 18px;
     border-radius: 6px;
     font-weight: 600;
-    background-color: #545353ff; /* Gris foncé unique */
+    background-color: #545353;
     color: #ffffff !important;
     font-size: 0.85em;
     border: 1px solid #222;
@@ -108,12 +116,12 @@ style: |
   }
   .problem-card h4 { color: #e74c3c; }
 
-  /* New Premium Cards for Empathie/Ideation */
+  /* Cartes premium pour empathie / idéation */
   .persona-card {
     background: #ffffff;
     padding: 18px;
     border-radius: 14px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     border-top: 5px solid #088dc7;
     transition: transform 0.3s ease;
   }
@@ -132,26 +140,19 @@ style: |
 
 ---
 
-
 <div class="logo-header">
-  <img src="images/ofppt-logo.png" alt="Logo Left">
-  <img src="images/logo-solicode.png" alt="Logo Right">
+  <img src="images/ofppt-logo.png" alt="Logo OFPPT">
+  <img src="images/logo-solicode.png" alt="Logo SoliCode">
 </div>
 
-# ** Abstraction et Architecture par Interface**
-### Pour des Tests Unitaires propres et maintenables dans Laravel**
+# **Abstraction et architecture par interface**
+### Pour des tests unitaires propres et maintenables dans Laravel
 
 **Réalisé par :** <span class="highlight">BENYEKHLEF Anouar</span>  
-**Encadré par :** <span class="highlight">M. ESSARRAJ Fouad</span>  
+**Encadré par :** <span class="highlight">M. ESSARRAJ Fouad</span>
 
 ---
----
 
-# Abstraction et Architecture par Interface
-
-## Pour des Tests Unitaires propres et maintenables dans Laravel
-
----
 
 ## Pourquoi l'abstraction par interface ?
 
@@ -178,11 +179,11 @@ class OrderService
 }
 ```
 
-→ Très difficile à tester unitairement
+Très difficile à tester unitairement.
 
 ---
 
-## Solution : Architecture par Interface
+## Solution : architecture par interface
 
 ```php
 // 1. Créer l'interface
@@ -204,7 +205,7 @@ class StripePaymentGateway implements PaymentGatewayInterface
 
 ---
 
-## Injection via le Constructor
+## Injection via le constructeur
 
 ```php
 class OrderService
@@ -219,7 +220,7 @@ class OrderService
     public function createOrder(array $data)
     {
         $result = $this->paymentGateway->charge(
-            $data['amount'], 
+            $data['amount'],
             $data['payment_token']
         );
 
@@ -230,7 +231,7 @@ class OrderService
 
 ---
 
-## Configuration dans le Service Container
+## Configuration dans le conteneur de services
 
 ```php
 // app/Providers/AppServiceProvider.php
@@ -245,7 +246,7 @@ public function register()
 
 ---
 
-## Test Unitaire avec Mock
+## Test unitaire avec mock
 
 ```php
 use Mockery;
@@ -280,10 +281,10 @@ class OrderServiceTest extends TestCase
 
 ## Avantages de cette approche
 
-- Tests **rapides** (pas d'appel API réel)
-- Tests **fiables** (pas de dépendance externe)
+- Tests **rapides** sans appel API réel
+- Tests **fiables** sans dépendance externe
 - Code **plus propre** et **découplé**
-- Facile à changer d'implémentation (ex: passer à PayPal, CIB, etc.)
+- Changement d'implémentation simplifié (`Stripe`, `PayPal`, `CIB`, etc.)
 
 ---
 
@@ -291,19 +292,19 @@ class OrderServiceTest extends TestCase
 
 1. Placer les interfaces dans `app/Contracts/`
 2. Nommer les interfaces avec le suffixe `Interface`
-3. Toujours injecter les abstractions (interfaces), jamais les classes concrètes
-4. Utiliser le constructor injection
+3. Toujours injecter les abstractions, jamais les classes concrètes
+4. Utiliser l'injection par constructeur
 5. Tester le comportement, pas l'implémentation
 
 ---
 
 ## Résumé
 
-**Abstraction par Interface =**
+**L'abstraction par interface permet :**
 
-- Meilleure **testabilité**
-- Meilleure **maintenabilité**
-- Respect des **principes SOLID**
-- Architecture **moderne** et **professionnelle**
+- une meilleure **testabilité**
+- une meilleure **maintenabilité**
+- le respect des **principes SOLID**
+- une architecture **moderne** et **professionnelle**
 
----
+
