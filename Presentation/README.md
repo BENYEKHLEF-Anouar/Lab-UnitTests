@@ -9,7 +9,7 @@ style: |
   section {
     font-size: 22px;
     color: #333;
-    line-height: 1.6;
+    line-height: 1.7;
     padding: 60px 80px;
   }
   footer { width: 100%; text-align: right; font-size: 14px; color: #888; }
@@ -24,8 +24,10 @@ style: |
   }
   .logo-header img { height: 140px; margin: 0 10px; }
   h1 { color: #088dc7; font-size: 2.8em; margin-top: 100px; text-align: left; }
-  h2 { color: #088dc7; font-size: 2em; border-bottom: 2px solid #088dc7; margin-bottom: 40px; }
-  h3 { text-align: left; color: #444; margin-top: 0; }
+  h2 { color: #088dc7; font-size: 2.1em; border-bottom: 2px solid #088dc7; padding-bottom: 15px; }
+  h3 { color: #444; margin-top: 0; }
+
+  .highlight { color: #088dc7; font-weight: bold; }
 
   .sommaire-grid {
     display: grid;
@@ -55,14 +57,6 @@ style: |
     flex-shrink: 0;
   }
 
-  section > p > img {
-    display: block;
-    margin: 0 auto;
-    object-fit: contain;
-    border-radius: 10px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  }
-
   .dt-card {
     background: #f0f7fa;
     padding: 30px;
@@ -70,10 +64,8 @@ style: |
     border-top: 6px solid #088dc7;
     text-align: left;
     margin-top: 20px;
-    width: 100%;
   }
 
-  /* Couleurs de la pile technique */
   .tech-container {
     display: flex;
     flex-wrap: wrap;
@@ -89,55 +81,23 @@ style: |
     font-size: 0.85em;
     border: 1px solid #222;
   }
-  .maquette-grid {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    align-items: flex-start;
-    height: 350px;
-  }
 
-  .context-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-top: 10px;
-  }
   .context-card {
     background: #f4faff;
     border-radius: 10px;
     padding: 20px 25px;
     border-left: 5px solid #088dc7;
   }
-  .context-card h4 { color: #088dc7; margin: 0 0 10px 0; }
   .problem-card {
     background: #fff5f5;
     border-left-color: #e74c3c;
   }
   .problem-card h4 { color: #e74c3c; }
 
-  /* Cartes premium pour empathie / idéation */
-  .persona-card {
-    background: #ffffff;
-    padding: 18px;
-    border-radius: 14px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    border-top: 5px solid #088dc7;
-    transition: transform 0.3s ease;
+  .good-example {
+    background: #f0f9f0;
+    border-left: 5px solid #27ae60;
   }
-  .persona-card strong { font-size: 1.1em; display: block; margin-bottom: 8px; }
-  .persona-card p { font-size: 0.85em; margin: 0; color: #555; line-height: 1.4; }
-
-  .ideation-badge {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.75em;
-    font-weight: bold;
-    margin-right: 5px;
-    margin-bottom: 5px;
-  }
-
 ---
 
 <div class="logo-header">
@@ -145,33 +105,48 @@ style: |
   <img src="images/logo-solicode.png" alt="Logo SoliCode">
 </div>
 
-# **Abstraction et architecture par interface**
-### Pour des tests unitaires propres et maintenables dans Laravel
+# **Abstraction et Architecture par Interface**
+### Pour des tests unitaires propres et faciles dans Laravel
 
 **Réalisé par :** <span class="highlight">BENYEKHLEF Anouar</span>  
 **Encadré par :** <span class="highlight">M. ESSARRAJ Fouad</span>
 
 ---
 
+## Objectifs de ce cours
 
-## Pourquoi l'abstraction par interface ?
-
-- Rendre le code **testable**
-- Respecter le **principe de dépendance inversée** (DIP - SOLID)
-- Faciliter le **mocking** dans les tests
-- Améliorer la **maintenabilité** et la **flexibilité**
+- Comprendre pourquoi le code "collé" (couplé) pose problème
+- Découvrir ce qu’est une **interface** en programmation
+- Apprendre à utiliser l’**abstraction** pour rendre le code testable
+- Voir une architecture propre et professionnelle avec Laravel
 
 ---
 
-## Problème courant sans abstraction
+## Pourquoi utiliser l’abstraction par interface ?
+
+Imaginez que vous construisez une maison :
+- Si vous collez directement les briques au mur, c’est très dur de les changer plus tard.
+- Si vous utilisez des **vis et des connecteurs**, vous pouvez facilement changer une partie sans casser tout le reste.
+
+**L’interface = le connecteur**
+
+**Avantages :**
+- Code plus facile à tester
+- Code plus flexible (vous pouvez changer Stripe par PayPal facilement)
+- Respect du principe SOLID (DIP)
+- Meilleure maintenabilité
+
+---
+
+## Problème courant : Code fortement couplé
 
 ```php
-// Mauvaise pratique
+// Mauvaise pratique - Très difficile à tester
 class OrderService
 {
     public function createOrder(array $data)
     {
-        $payment = new StripePaymentGateway(); // Couplage fort !
+        $payment = new StripePaymentGateway();   // ← Couplage fort !
         $payment->charge($data['amount']);
 
         // ...
@@ -179,39 +154,45 @@ class OrderService
 }
 ```
 
-Très difficile à tester unitairement.
+**Problèmes :**
+- Impossible de tester sans appeler vraiment Stripe
+- Si Stripe change ou tombe en panne → tous les tests échouent
+- Impossible de tester avec une fausse carte bancaire
 
 ---
 
-## Solution : architecture par interface
+## Solution : Utiliser une Interface (Le Connecteur)
 
 ```php
-// 1. Créer l'interface
+// 1. Créer l'interface (le contrat)
 interface PaymentGatewayInterface
 {
     public function charge(float $amount, string $token): PaymentResult;
     public function refund(string $transactionId): bool;
 }
 
-// 2. Implémentation concrète
+// 2. L'implémentation concrète (la vraie classe)
 class StripePaymentGateway implements PaymentGatewayInterface
 {
     public function charge(float $amount, string $token): PaymentResult
     {
-        // Appel à l'API Stripe
+        // Code réel pour appeler Stripe
     }
 }
 ```
 
+> L’interface dit **"ce que doit faire"**, pas **"comment"** il le fait.
+
 ---
 
-## Injection via le constructeur
+## Injection via le Constructeur (La Bonne Pratique)
 
 ```php
 class OrderService
 {
     private PaymentGatewayInterface $paymentGateway;
 
+    // Nous demandons l'interface, pas la classe concrète
     public function __construct(PaymentGatewayInterface $paymentGateway)
     {
         $this->paymentGateway = $paymentGateway;
@@ -220,7 +201,7 @@ class OrderService
     public function createOrder(array $data)
     {
         $result = $this->paymentGateway->charge(
-            $data['amount'],
+            $data['amount'], 
             $data['payment_token']
         );
 
@@ -229,24 +210,28 @@ class OrderService
 }
 ```
 
+**Maintenant le service ne dépend plus de Stripe, mais d’un "moyen de paiement".**
+
 ---
 
-## Configuration dans le conteneur de services
+## Enregistrer l’interface dans Laravel (Service Container)
 
 ```php
 // app/Providers/AppServiceProvider.php
 public function register()
 {
     $this->app->bind(
-        PaymentGatewayInterface::class,
-        StripePaymentGateway::class
+        PaymentGatewayInterface::class,   // Interface
+        StripePaymentGateway::class       // Implémentation réelle
     );
 }
 ```
 
+Laravel sait maintenant : "Quand quelqu’un demande PaymentGatewayInterface, je lui donne StripePaymentGateway".
+
 ---
 
-## Test unitaire avec mock
+## Test Unitaire avec Mock (Le plus important !)
 
 ```php
 use Mockery;
@@ -258,10 +243,10 @@ class OrderServiceTest extends TestCase
 {
     public function test_create_order_charges_payment()
     {
-        // Mock de l'interface
+        // Création d'un faux moyen de paiement (Mock)
         $mockGateway = Mockery::mock(PaymentGatewayInterface::class);
         $mockGateway->shouldReceive('charge')
-                    ->once()
+                    ->once()                    // doit être appelé une seule fois
                     ->with(99.99, 'tok_123')
                     ->andReturn(new PaymentResult(true, 'ch_456'));
 
@@ -281,30 +266,49 @@ class OrderServiceTest extends TestCase
 
 ## Avantages de cette approche
 
-- Tests **rapides** sans appel API réel
-- Tests **fiables** sans dépendance externe
-- Code **plus propre** et **découplé**
-- Changement d'implémentation simplifié (`Stripe`, `PayPal`, `CIB`, etc.)
+| Avantage              | Sans Interface          | Avec Interface              |
+|-----------------------|-------------------------|-----------------------------|
+| Testabilité           | Très difficile          | Très facile                 |
+| Vitesse des tests     | Lente (appels API)      | Rapide                      |
+| Flexibilité           | Difficile à changer     | Très facile (Stripe → PayPal) |
+| Maintenabilité        | Compliqué               | Propre et clair             |
 
 ---
 
-## Bonnes pratiques recommandées
+## Bonnes Pratiques (À toujours respecter)
 
-1. Placer les interfaces dans `app/Contracts/`
-2. Nommer les interfaces avec le suffixe `Interface`
-3. Toujours injecter les abstractions, jamais les classes concrètes
-4. Utiliser l'injection par constructeur
-5. Tester le comportement, pas l'implémentation
+1. Mettre toutes les interfaces dans `app/Contracts/`
+2. Nommer les interfaces avec `Interface` à la fin (`PaymentGatewayInterface`)
+3. Toujours demander l’**interface**, jamais la classe concrète
+4. Préférer l’injection par **constructeur**
+5. Tester le **comportement**, pas l’implémentation interne
 
 ---
 
-## Résumé
+## Résumé Final
 
-**L'abstraction par interface permet :**
+**L’abstraction par interface permet de :**
 
-- une meilleure **testabilité**
-- une meilleure **maintenabilité**
-- le respect des **principes SOLID**
-- une architecture **moderne** et **professionnelle**
+- Transformer un code **rigide** en code **flexible**
+- Rendre les tests unitaires **faciles, rapides et fiables**
+- Respecter les bonnes pratiques professionnelles (SOLID)
+- Changer facilement de moyen de paiement, de base de données, ou d’API
 
+> **Phrase à retenir :**
+> "Programme contre une interface, pas contre une implémentation concrète."
 
+---
+
+## Merci pour votre attention !
+
+**Questions ?**
+
+**Exercice pratique recommandé :**
+1. Créer une interface `SmsGatewayInterface`
+2. Faire deux implémentations (Twilio et Nexmo)
+3. Injecter dans un `NotificationService`
+4. Tester avec Mock
+  
+---
+
+**BON COURAGE !** 
