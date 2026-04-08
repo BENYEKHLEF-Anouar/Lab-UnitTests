@@ -303,12 +303,4 @@ class OrderServiceTest extends TestCase
 
 **Questions ?**
 
-**Exercice pratique recommandé :**
-1. Créer une interface `SmsGatewayInterface`
-2. Faire deux implémentations (Twilio et Nexmo)
-3. Injecter dans un `NotificationService`
-4. Tester avec Mock
-  
----
-
 **BON COURAGE !** 
